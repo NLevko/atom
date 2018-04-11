@@ -1,16 +1,19 @@
 package ru.atom.lecture08.websocket;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import ru.atom.lecture08.websocket.message.Message;
+import ru.atom.lecture08.websocket.message.Topic;
 
 import java.io.IOException;
 
 public class EventClient {
     public static void main(String[] args) {
         // connection url
-        String uri = "ws://localhost:8090/events";
+        String uri = "ws://54.224.37.210:8090/events";
 
         StandardWebSocketClient client = new StandardWebSocketClient();
         WebSocketSession session = null;
@@ -22,7 +25,10 @@ public class EventClient {
             // Wait for Connect
             session = fut.get();
             // Send a message
-            session.sendMessage(new TextMessage("Hello"));
+            Message m = new Message(Topic.HELLO, "Levko Nikolay");
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonString = objectMapper.writeValueAsString(m);
+            session.sendMessage(new TextMessage(jsonString));
             // Close session
             session.close();
 
